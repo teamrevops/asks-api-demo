@@ -1,0 +1,11 @@
+{
+  "profiles": [
+    {
+      "user": "obama",
+      "photo": "photos/obama_profile_picture"
+    },
+    {
+      "user": "trump"
+    }
+  ]
+}

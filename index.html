@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+</head>
+
+<body>
+  <div id="app">
+    <v-app>
+      <v-app-bar app dark>
+        <v-toolbar-title>Asks API Demo</v-toolbar-title>
+      </v-app-bar>
+      <v-main>
+        <v-container>
+          <v-card class="mx-auto" max-width="344">
+            <v-img
+              src="https://images.unsplash.com/photo-1587573578181-f3342274f4c7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=802&q=80"
+              height="200px"></v-img>
+
+            <v-card-title>
+              My Profile
+            </v-card-title>
+
+            <v-card-subtitle>
+              User: {{user}}
+            </v-card-subtitle>
+            <v-card-text v-if="profile && profile.photo">
+              <div class="my-4 subtitle-1">
+                My Profile Picture
+              </div>              
+              <v-row align="center" class="mx-0">
+                {{profile.photo}}
+                <v-img max-height="150" max-width="250" :src="profile.photo"></v-img>
+              </v-row>
+            </v-card-text>
+            <v-card-text v-else>
+              <v-card-text v-if="upLoadLinks">
+                <div class="my-4 subtitle-1">
+                  Scan QRCode and upload your profile picture!
+                </div>
+                <v-img :src="upLoadLinks.qrcode"></v-img>
+                <div class="my-4 subtitle-1">
+                  <a :href="upLoadLinks.link" target="_blank">Or Click This Link</a>
+                </div>
+              </v-card-text>
+              <v-btn v-else color="primary" @click="getUploadLinkAndWait">Upload My Photo</v-btn>
+            </v-card-text>
+
+
+          </v-card>
+        </v-container>
+      </v-main>
+    </v-app>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+  <script>
+    new Vue({
+      data: () => ({
+        user: null,
+        profile: { user: null, photo: null },
+        upLoadLinks: null
+      }),
+      methods: {
+        getUploadLinkAndWait: async function () {
+          const formId = "COyR7b9puA9hCmSV82mR";
+          let res = await fetch(`https://67419652582f.ngrok.io/api/getLinks/?formId=${formId}&reference=${this.user}`); //TODO change url
+          this.upLoadLinks = await res.json();
+
+
+
+          function sleep(ms) {
+            return new Promise((resolve) => setTimeout(resolve, ms));
+          }
+          for (let i = 0; i < 100; i++) {
+            let res = await fetch(`http://localhost:3000/profiles/?user=${this.user}`);
+            let body = await res.json();            
+            if (body.photo) {            
+              this.$set(this.profile, 'photo', body.photo)
+              console.log("poll", "has photo");
+              break;
+            } else {
+              await sleep(3000);
+              console.log("poll", new Date());
+              continue;
+            }
+          }
+
+
+        }
+      },
+      mounted: async function () {
+        let uri = window.location.search.substring(1);
+        let params = new URLSearchParams(uri);
+        let user = params.get("user");
+        this.user = user;
+        let res = await fetch(`http://localhost:3000/profiles/?user=${user}`);
+        if (res.status != "404") {
+          this.profile = await res.json()
+        }
+      },
+      el: '#app',
+      vuetify: new Vuetify(),
+    })
+  </script>
+</body>
+
+</html>
