@@ -32,8 +32,7 @@
               <div class="my-4 subtitle-1">
                 My Profile Picture
               </div>              
-              <v-row align="center" class="mx-0">
-                {{profile.photo}}
+              <v-row align="center" class="mx-0">                
                 <v-img max-height="150" max-width="250" :src="profile.photo"></v-img>
               </v-row>
             </v-card-text>
@@ -69,7 +68,7 @@
       methods: {
         getUploadLinkAndWait: async function () {
           const formId = "COyR7b9puA9hCmSV82mR";
-          let res = await fetch(`https://67419652582f.ngrok.io/api/getLinks/?formId=${formId}&reference=${this.user}`); //TODO change url
+          let res = await fetch(`https://dev-api-now.asks.co/api/getLinks/?formId=${formId}&reference=${this.user}`); //TODO change url
           this.upLoadLinks = await res.json();
 
 
