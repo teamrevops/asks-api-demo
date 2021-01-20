@@ -68,7 +68,7 @@
       methods: {
         getUploadLinkAndWait: async function () {
           const formId = "COyR7b9puA9hCmSV82mR";
-          let res = await fetch(`https://dev-api-now.asks.co/api/getLinks/?formId=${formId}&reference=${this.user}`); //TODO change url
+          let res = await fetch(`https://prod-api-now.asks.co/api/getLinks/?formId=${formId}&reference=${this.user}&startMessage=StartNow`); //TODO change url
           this.upLoadLinks = await res.json();
 
 
@@ -77,7 +77,7 @@
             return new Promise((resolve) => setTimeout(resolve, ms));
           }
           for (let i = 0; i < 100; i++) {
-            let res = await fetch(`http://localhost:3000/profiles/?user=${this.user}`);
+            let res = await fetch(`/profiles/?user=${this.user}`);
             let body = await res.json();            
             if (body.photo) {            
               this.$set(this.profile, 'photo', body.photo)
@@ -98,7 +98,7 @@
         let params = new URLSearchParams(uri);
         let user = params.get("user");
         this.user = user;
-        let res = await fetch(`http://localhost:3000/profiles/?user=${user}`);
+        let res = await fetch(`/profiles/?user=${user}`);
         if (res.status != "404") {
           this.profile = await res.json()
         }
